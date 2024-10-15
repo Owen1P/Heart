@@ -1,19 +1,17 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#ifndef _WIN32
-#include <unistd.h>
-#else
+
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-//window specific usleep implementation
-void usleep(unsigned int usec) {
-  HANDLE timer;
-  LARGE_INTEGER ft;
-  ft.QuadPart = -(10 * usec);
-  timer = CreateWaitableTimer(NULL, TRUE, NULL);
-  SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
-  WaitForSingleObject(timer, INFINITE);
-  CloseHandle(timer);
+// Windows-specific sleep function
+void sleep_ms(int milliseconds) {
+    Sleep(milliseconds);
+}
+#else
+#include <unistd.h>
+void sleep_ms(int milliseconds) {
+    usleep(milliseconds * 1000); 
 }
 #endif
 
@@ -109,10 +107,10 @@ int main() {
         //updated rotation
         A += 0.03f;
         B += 0.02f;
-        C += 0.01f
+        C += 0.01f;
 
         //sleep for short duration
-        usleep(30000);
+        sleep_ms(30);
     }
     return 0;
 }
